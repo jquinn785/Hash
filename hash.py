@@ -71,23 +71,31 @@ def stats(hashTable):
     return wastedRows, collisions
 
 if __name__ == "__main__":
+    # Create Lists for keys and values
     movieTitleKeys = []
     movieTitleValues = []
     movieQuotesKeys = []
     movieQuotesValues = []
+
     with open("MOCK_DATA.csv", newline="") as file:
         reader = csv.reader(file)
         for row in reader:
+            # Read in first column
             movieTitleKeys.append(row[0])
+            # Read in everything but first column
             movieTitleValues.append(row[1:])
+            # Read in last column
             movieQuotesKeys.append(row[-1])
+            # Read in everything but last column
             movieQuotesValues.append(row[:7])
 
+    # Pop the headers
     movieTitleKeys.pop(0)
     movieTitleValues.pop(0)
     movieQuotesKeys.pop(0)
     movieQuotesValues.pop(0)
 
+    # Create list of DataItems
     movieTitleDataItemList = []
     movieQuoteDataItemList = []
 
