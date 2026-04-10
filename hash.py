@@ -1,5 +1,5 @@
 # hash.py
-# Purpose: This file uses a custom hash function to create a hast table 
+# Purpose: This file uses a custom hash function to create a hash table 
 # Author: John Quinn
 # Recieved help from geeksforgeeks: https://www.geeksforgeeks.org/dsa/hash-table-data-structure/
 
@@ -22,21 +22,20 @@ class HashTable:
         self.size = size
         self.table = [[] for x in range(size)]
     
-    # take the ascii number of a each char in the key and then turn it into an int
-    # Python only supports strings of size 4300 to be type cast
-    # find the modulo of that number against the size of the table
+    # concat each ascii number of each char in the key then turn it into an int
+    # Python only supports typecasting strings of size 4300
+    # find the modulo of that number against a large prime number
+    # find the modulo of that number against the table size
     def hashFunction(self, key):
         PRIME_NUMBER = 611953
-        asciiKeyStr = ""
+        hashValue = 0
         if type(key) == str:
             for char in key:
-                asciiValue = str(ord(char))
-                asciiKeyStr += asciiValue
-            asciiKey = int(asciiKeyStr[:4300])
-        elif type(key) == int:
-            asciiKey = key
-        middle = asciiKey % PRIME_NUMBER
-        return middle % self.size
+                hashValue = (hashValue * PRIME_NUMBER + ord(char)) % self.size
+                
+        # middle = asciiKey % PRIME_NUMBER
+
+        return hashValue
     
     # find the index of the dataItem key
     # go that index in the table and append dataItem to it
@@ -89,7 +88,7 @@ if __name__ == "__main__":
             # Read in last column
             movieQuotesKeys.append(row[-1])
             # Read in everything but last column
-            movieQuotesValues.append(row[:7])
+            movieQuotesValues.append(row[:8])
 
     # Pop the headers
     movieTitleKeys.pop(0)
