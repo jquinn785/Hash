@@ -26,6 +26,7 @@ class HashTable:
     # Python only supports strings of size 4300 to be type cast
     # find the modulo of that number against the size of the table
     def hashFunction(self, key):
+        PRIME_NUMBER = 50051
         asciiKeyStr = ""
         if type(key) == str:
             for char in key:
@@ -34,7 +35,8 @@ class HashTable:
             asciiKey = int(asciiKeyStr[:4300])
         elif type(key) == int:
             asciiKey = key
-        return asciiKey % self.size
+        middle = asciiKey % PRIME_NUMBER
+        return middle % self.size
     
     # find the index of the dataItem key
     # go that index in the table and append dataItem to it
