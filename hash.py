@@ -29,6 +29,7 @@ class hash:
         if type(key) == str:
             for char in key:
                 hashValue = (hashValue * PRIME_NUMBER_LIST[random.randint(0, len(PRIME_NUMBER_LIST) - 1)] + ord(char))
+                hashValue //= PRIME_NUMBER_LIST[random.randint(0, len(PRIME_NUMBER_LIST) - 1)]
         return hashValue % len(self.table)
 
 class LinkedListHashTable(hash):
