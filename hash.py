@@ -23,17 +23,12 @@ class hash:
     # find the modulo of that number against a large prime number
     # find the modulo of that number against the table size
     def hashFunction(self, key):
-        PRIME_NUMBER = 611953 
-        asciiKeyStr = ""
+        PRIME_NUMBER = 611953
+        hashValue = 0
         if type(key) == str:
             for char in key:
-                asciiValue = str(ord(char))
-                asciiKeyStr += asciiValue
-            asciiKey = int(asciiKeyStr[:4300])
-        elif type(key) == int:
-            asciiKey = key
-        middle = asciiKey % PRIME_NUMBER
-        return middle % len(self.table)
+                hashValue = (hashValue * PRIME_NUMBER + ord(char))
+        return hashValue % len(self.table)
 
 class LinkedListHashTable(hash):
     def __init__(self, size):
