@@ -17,59 +17,88 @@ class DataItem:
     def __repr__(self):
         return f"{self.key}: {self.value}"
 
-class HashTable:
-    def __init__(self, size):
-        self.size = size
-        self.table = [[] for x in range(size)]
-    
+class hash:
     # concat each ascii number of each char in the key then turn it into an int
     # Python only supports typecasting strings of size 4300
     # find the modulo of that number against a large prime number
     # find the modulo of that number against the table size
     def hashFunction(self, key):
-        PRIME_NUMBER = 611953
-        hashValue = 0
+        asciiKeyStr = ""
         if type(key) == str:
             for char in key:
-                hashValue = (hashValue * PRIME_NUMBER + ord(char)) % self.size
-                
-        # middle = asciiKey % PRIME_NUMBER
+                asciiValue = str(ord(char))
+                asciiKeyStr += asciiValue
+            asciiKey = int(asciiKeyStr[:4300])
+        elif type(key) == int:
+            asciiKey = key
+        return asciiKey % self.size
 
-        return hashValue
-    
+class LinkedListHashTable(hash):
+    def __init__(self, size):
+        self.size = size
+        self.table = [[] for i in range(size)]
+        self.collisions = 0
     # find the index of the dataItem key
     # go that index in the table and append dataItem to it
     # if there are collisions they are stored in a list at this index
     def addDataItem(self, dataItem):
         index = self.hashFunction(dataItem.key)
+        if len(self.table[index]) > 0:
+            self.collisions += len(self.table[index])
         self.table[index].append(dataItem)
-    
-    # find the index of the dataItem key
-    # if dataItem key is not in the table exit
-    # otherwise remove that dataItem
-    def removeDataItem(self, dataItem):
-        index = self.hashFunction(dataItem.key)
-        if dataItem.key not in self.table[index]:
-            return
-        self.table[index].remove(dataItem)
 
-# helper function to create a hashtable given a list of DataItems
-def createHashTable(dataItemList):
-    hashTable = HashTable(len(dataItemList))
+class LinearProbeHashTable(hash):
+    def __init__(self, size, capacity):
+        self.size = size
+        self.capacity = capacity
+        self.table = [None] * capacity
+        self.collisions = 0
+
+    # if row is none insert DataItem
+    # if row is not none iterate through table until an empty row is found
+    # if index reaches start_index then table is full and exit
+    def addDataItem(self, dataItem):
+        index = self.hashFunction(dataItem.key)
+        start_index = index
+        if self.table[index] == None:
+            self.table[index] = dataItem
+        else:
+            while(self.table[index] != None):
+                index = (index + 1) % self.capacity
+                self.collisions += 1
+                if index == start_index:
+                    return
+            self.table[index] = dataItem
+
+
+
+# helper function to create a linked list hash table given a list of DataItems
+def createLinkedListHashTable(dataItemList):
+    hashTable = LinkedListHashTable(len(dataItemList))
     for i in dataItemList:
         hashTable.addDataItem(i)
     return hashTable
 
-# helper function to display the stats of each HashTable
-def stats(hashTable):
+# helper function to create a linear probe hash table given a list of DataItems
+def createLinearProbeHashTable(dataItemList):
+    hashTable = LinearProbeHashTable(len(dataItemList), len(dataItemList)*2)
+    for i in dataItemList:
+        hashTable.addDataItem(i)
+    return hashTable
+
+def stats(hashTable, linkedList=True):
+    collisions = hashTable.collisions
     wastedRows = 0
-    collisions = 0
-    for i in range(hashTable.size):
-        if len(hashTable.table[i]) == 0:
-            wastedRows += 1
-        if len(hashTable.table[i]) > 1:
-            collisions += 1
+    if linkedList:
+        for i in range(hashTable.size):
+            if len(hashTable.table[i]) == 0:
+                wastedRows += 1
+    else:
+        for i in range(hashTable.size):
+            if hashTable.table[i] == None:
+                wastedRows += 1
     return wastedRows, collisions
+
 
 if __name__ == "__main__":
     # Create Lists for keys and values
@@ -106,13 +135,13 @@ if __name__ == "__main__":
         movieQuoteDataItemList.append(DataItem(movieQuotesKeys[i], movieQuotesValues[i]))
     
     titleStart = time.time()
-    movieTitleHashTable = createHashTable(movieTitleDataItemList)
+    movieTitleHashTable = createLinkedListHashTable(movieTitleDataItemList)
     titleEnd = time.time()
     wastedRowsTitle, collisionsTitle = stats(movieTitleHashTable)
-    print(f"Movie Title Keys: Wasted Rows: {wastedRowsTitle}, Collisions: {collisionsTitle}, Time: {titleEnd-titleStart}")
+    print(f"Movie Title Keys - Linked List: Wasted Rows: {wastedRowsTitle}, Collisions: {collisionsTitle}, Time: {titleEnd-titleStart}")
 
     quoteStart = time.time()
-    movieQuoteHashTable = createHashTable(movieQuoteDataItemList)
+    movieQuoteHashTable = createLinearProbeHashTable(movieQuoteDataItemList)
     quoteEnd = time.time()
-    wastedRowsQuote, collisionsQuote = stats(movieQuoteHashTable)
-    print(f"Movie Quote Keys: Wasted Rows: {wastedRowsQuote}, Collisions: {collisionsQuote}, Time: {quoteEnd-quoteStart}")
+    wastedRowsQuote, collisionsQuote = stats(movieQuoteHashTable, linkedList=False)
+    print(f"Movie Quote Keys - Linear Probe: Wasted Rows: {wastedRowsQuote}, Collisions: {collisionsQuote}, Time: {quoteEnd-quoteStart}")
