@@ -5,6 +5,7 @@
 
 import time
 import csv
+import random
 
 class DataItem:
     def __init__(self, key, value):
@@ -23,11 +24,11 @@ class hash:
     # find the modulo of that number against a large prime number
     # find the modulo of that number against the table size
     def hashFunction(self, key):
-        PRIME_NUMBER = 611953
+        PRIME_NUMBER_LIST = [601021, 601031, 601037, 601039, 601043, 601061, 601067, 601079, 601093, 601127, 601147, 601187, 601189, 601193, 601201, 601207, 601219, 601231, 601241, 601247, 601259, 601267, 601283, 601291, 601297, 601309, 601313, 601319, 601333, 601339, 601357, 601379, 601397, 601411, 601423, 601439, 601451, 601457, 601487, 601507, 601541, 601543, 601589, 601591, 601607, 601631, 601651, 601669, 601687, 601697, 601717, 601747, 601751, 601759, 601763, 601771, 601801, 601807, 601813, 601819, 601823, 601831, 601849, 601873, 601883, 601889, 601897, 601903, 601943, 601949, 601961, 601969, 601981]
         hashValue = 0
         if type(key) == str:
             for char in key:
-                hashValue = (hashValue * PRIME_NUMBER + ord(char))
+                hashValue = (hashValue * PRIME_NUMBER_LIST[random.randint(0, len(PRIME_NUMBER_LIST) - 1)] + ord(char))
         return hashValue % len(self.table)
 
 class LinkedListHashTable(hash):
